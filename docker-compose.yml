@@ -19,3 +19,17 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     depends_on:
       - zookeeper
+  
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    environment:
+      POSTGRES_DB: streaming
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:

@@ -6,3 +6,5 @@ streamlit
 kafka-python
 dbt-core
 pytest
+kafka-python
+psycopg2-binary
