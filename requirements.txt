@@ -9,3 +9,6 @@ dbt-postgres
 pytest
 kafka-python
 psycopg2-binary
+fastapi
+uvicorn[standard]
+requests
