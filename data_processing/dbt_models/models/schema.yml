@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: public
+    tables:
+      - name: raw_user_activity
+
+models:
+  - name: clean_user_activity
+    description: "Cleans raw user activity for downstream use"
+    columns:
+      - name: user_id
+        description: "User ID"
+      - name: device_id
+      - name: ip_location
+      - name: timestamp
+      - name: activity_date
+      - name: hour_of_day

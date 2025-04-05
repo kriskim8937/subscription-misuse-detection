@@ -5,6 +5,7 @@ scikit-learn
 streamlit
 kafka-python
 dbt-core
+dbt-postgres
 pytest
 kafka-python
 psycopg2-binary
