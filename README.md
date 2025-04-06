@@ -4,46 +4,81 @@
 
 This project aims to detect and prevent subscription misuse in a streaming platform. The system ingests user activity data, processes it using scalable data pipelines, applies rule-based and ML-based anomaly detection techniques, and provides an API for enforcing account restrictions. Additionally, a dashboard visualizes flagged accounts and misuse patterns.
 
-## What Has Been Implemented
+## Directory Structure
+```plaintext
+subscription-misuse-detection/
+│
+├── data_ingestion/                   # Directory for data ingestion scripts
+│   ├── kafka_producer.py             # Kafka producer script for generating user activity data
+│   ├── kafka_to_postgres.py          # Kafka consumer that writes data to PostgreSQL
+│   └── pubsub_publisher.py            # (Optional) Pub/Sub publisher script (if applicable)
+│
+├── data_processing/                   # Directory for data processing scripts and models
+│   ├── dbt_models/                    # Directory for DBT models
+│   │   ├── models/                    # DBT transformation models
+│   │   │   └── clean_user_activity.sql # DBT model for cleaning user activity data
+│   │   └── dbt_project.yml            # DBT project configuration file
+│   └── scio_jobs/                     # (Optional) Directory for Scio (Scala) jobs
+│
+├── misuse_detection/                  # Directory for misuse detection logic
+│   ├── anomaly_detection.py            # (Optional) Script for ML-based anomaly detection
+│   └── rule_based_filtering.py         # Script for rule-based filtering of user activities
+│
+├── backend_api/                       # Directory for FastAPI backend
+│   ├── app.py                         # FastAPI application with API endpoints
+│   └── models.py                      # (Optional) Data models and Pydantic schemas
+│
+├── visualization/                     # Directory for Streamlit dashboard
+│   ├── dashboard.py                   # Streamlit app for visualizing flagged users
+│
+├── deployment/                        # Directory for deployment-related files
+│   ├── docker-compose.yml             # Docker Compose configuration file
+│   └── terraform/                     # (Optional) Terraform scripts for cloud deployment
+│
+├── tests/                             # Directory for tests (if applicable)
+│   ├── test_rule_based_filtering.py    # Tests for rule-based filtering logic
+│   └── test_fastapi.py                 # Tests for FastAPI endpoints
+│
+├── .gitignore                         # Git ignore file
+├── LICENSE                            # License file for the project
+├── README.md                          # Project documentation
+└── requirements.txt                   # Python dependencies for the project
+```
+## Architecture Overview
 
-- **Data Ingestion**: 
-  - Simulated streaming data ingestion using **Kafka**.
-  - Data is stored in a **PostgreSQL** database for further processing.
+The architecture of the Subscription Misuse Detection system is designed to efficiently process and analyze user activity data, detect misuse, and provide insights through a user-friendly dashboard. The following components outline the system architecture:
 
-- **Data Processing**:
-  - Used **DBT** to transform raw activity logs into clean datasets.
-  - Created models for data transformation in `dbt_models`.
+1. Data Ingestion:
 
-- **Misuse Detection**:
-  - Implemented rule-based filtering logic in **Python** to identify suspicious user activities (e.g., multiple locations in a short time).
-  - A dedicated FastAPI service to expose APIs for flagged users.
+Kafka is used to simulate and stream user activity data into the system. The Kafka producer generates user activity events, while the Kafka consumer (kafka_to_postgres.py) ingests this data and stores it in a PostgreSQL database.
 
-- **API Development**:
-  - Created a **FastAPI** backend service to retrieve flagged users with endpoints:
-    - `GET /flagged-users`: Fetches a list of flagged users and their reasons for flagging.
-    - `GET /`: Health check endpoint.
+2. Data Storage:
 
-- **Dashboard**:
-  - Built a **Streamlit** dashboard to visualize flagged users.
-  - Allows filtering of flagged users by reason and date.
+A PostgreSQL database serves as the primary data storage solution. It contains tables for raw user activity (raw_user_activity) and flagged users (flagged_users). The clean_user_activity table is populated through DBT transformations to prepare data for analysis.
 
-## Added Features
+3. Data Processing:
 
-- **Database Integration**:
-  - Set up **PostgreSQL** with tables for raw user activity and flagged users.
-  
-- **User-friendly Dashboard**:
-  - An interactive Streamlit dashboard for displaying flagged users with filtering options.
+DBT is utilized to transform raw activity logs into structured datasets. Transformation models clean and enrich the data for downstream analysis.
 
-- **Environment Setup**:
-  - Dockerized the application for easy setup and deployment.
-  - Used a `devcontainer.json` for a consistent development environment.
+4. Misuse Detection:
 
-- **Scalability**:
-  - Implemented a modular approach to the data pipeline using DBT for scalability.
-  
-- **Testing and Validation**:
-  - Basic validation checks on API responses.
+The rule_based_filtering.py script implements rule-based filtering logic to identify suspicious user activities. Users who meet certain criteria (e.g., accessing multiple locations in a short time) are flagged and stored in the flagged_users table.
+
+5. API Development:
+
+A FastAPI backend exposes APIs for interaction with the system. Key endpoints include:
+
+GET /flagged-users: Retrieves a list of flagged users along with the reasons for flagging.
+
+GET /: A health check endpoint to confirm that the API is running.
+
+6. Visualization:
+
+A Streamlit dashboard provides an interactive interface for visualizing flagged users. Users can filter flagged activities by reason and date, allowing for quick insights into potential misuse.
+
+7. Deployment:
+
+The application is containerized using Docker for easy deployment and management. The docker-compose.yml file orchestrates the various services needed to run the application.
 
 ## Installation
 
@@ -72,6 +107,7 @@ pip install -r requirements.txt
 ```
 4. Create the database and necessary tables by running the following SQL commands in the PostgreSQL container:
 ```bash
+docker exec -it postgres psql -U postgres -d streaming
 CREATE TABLE IF NOT EXISTS raw_user_activity (
     user_id TEXT,
     device_id TEXT,
@@ -84,6 +120,12 @@ CREATE TABLE IF NOT EXISTS flagged_users (
     reason TEXT,
     flagged_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
+4. Run DBT
+```bash
+cd data_processing/dbt_models
+dbt debug
+dbt run  
 ```
 5. Start the FastAPI server:
 ```bash
@@ -107,24 +149,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [DBT](https://docs.docker.com/get-docker/)
 - [Kafka](https://docs.docker.com/get-docker/)
 - [Streamlit](https://docs.docker.com/get-docker/)
-
-## Added Features
-
-- **Database Integration**:
-  - Configured **PostgreSQL** with tables for storing raw user activity and flagged users.
-
-- **User-friendly Dashboard**:
-  - Implemented an interactive Streamlit dashboard to display flagged users, with filtering capabilities.
-
-- **Environment Setup**:
-  - Dockerized the application to streamline setup and deployment processes.
-  - Configured a `devcontainer.json` for a consistent development environment using VS Code.
-
-- **Scalability**:
-  - Adopted a modular approach in the data pipeline using DBT for enhanced scalability and maintainability.
-
-- **Testing and Validation**:
-  - Implemented basic validation checks on API responses to ensure reliability.
 
 ## Ideal Project Enhancements
 

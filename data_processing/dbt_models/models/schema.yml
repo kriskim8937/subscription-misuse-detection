@@ -1,18 +1,59 @@
 version: 2
 
 sources:
-  - name: public
+  - name: commerce  # Must match what's in your models
+    schema: public  # The PostgreSQL schema name
     tables:
-      - name: raw_user_activity
+      - name: raw_subscriptions
+        description: "Raw subscription data from Kafka"
+        columns:
+          - name: user_id
+          - name: plan_id
+          - name: is_trial
+          - name: timestamp
+
+      - name: raw_login_attempts
+        description: "User login attempts data"
+        columns:
+          - name: user_id
+          - name: device_id
+          - name: ip_address
+          - name: location
+          - name: is_successful
+          - name: timestamp
+
+      - name: raw_payments
+        description: "Payment transaction events"
+        columns:
+          - name: user_id
+          - name: amount
+          - name: currency
+          - name: status
+          - name: timestamp
 
 models:
-  - name: clean_user_activity
-    description: "Cleans raw user activity for downstream use"
+  - name: stg_user_subscriptions
+    description: "Cleaned subscription data"
     columns:
       - name: user_id
-        description: "User ID"
-      - name: device_id
-      - name: ip_location
+        description: "Unique user identifier"
+      - name: plan_id
+      - name: is_trial
       - name: timestamp
-      - name: activity_date
-      - name: hour_of_day
+
+  - name: stg_login_attempts
+    description: "Cleaned login attempt data"
+    columns:
+      - name: user_id
+      - name: device_id
+      - name: ip_address
+      - name: is_successful
+      - name: timestamp
+
+  - name: stg_payment_events
+    description: "Cleaned payment events"
+    columns:
+      - name: user_id
+      - name: amount
+      - name: status
+      - name: timestamp

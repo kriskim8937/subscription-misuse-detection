@@ -17,6 +17,6 @@
       ]
     }
   },
-  "postCreateCommand": "apt-get update && apt-get install -y netcat libpq-dev && pip install -r requirements.txt && mkdir -p ~/.dbt && cp /workspaces/subscription-misuse-detection/data_processing/dbt_profiles/profiles.yml ~/.dbt/profiles.yml",
+  "postCreateCommand": "apt-get update && apt-get install -y netcat libpq-dev && pip install -r requirements.txt",
   "remoteUser": "vscode"
 }

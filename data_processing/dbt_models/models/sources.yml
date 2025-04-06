@@ -1,0 +1,10 @@
+# models/sources.yml
+version: 2
+sources:
+  - name: public
+    database: streaming
+    schema: public
+    tables:
+      - name: raw_login_attempts
+      - name: raw_payments
+      - name: raw_subscriptions
