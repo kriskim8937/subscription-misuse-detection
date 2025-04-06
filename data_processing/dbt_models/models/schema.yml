@@ -45,9 +45,15 @@ models:
     description: "Cleaned login attempt data"
     columns:
       - name: user_id
+        tests:
+          - not_null                   # Ensures no NULL values
+          #- unique  
       - name: device_id
       - name: ip_address
       - name: is_successful
+        tests:
+          - accepted_values:
+              values: [true, false]
       - name: timestamp
 
   - name: stg_payment_events
@@ -55,5 +61,7 @@ models:
     columns:
       - name: user_id
       - name: amount
+        tests:
+            - not_null
       - name: status
       - name: timestamp
